@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>英语搭配学习实验（24题·数据完整预试版）</title>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>L2 Collocation Feedback Study | 英语搭配学习实验</title>
 <style>:root {color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:#000;color:#fff;font-family:Arial,"Microsoft YaHei","PingFang SC",sans-serif;font-size:19px;line-height:1.7}
@@ -51,7 +51,7 @@ input[type=radio]{width:17px;height:17px;vertical-align:middle;accent-color:#fff
 </style></head>
 <body><div id="app"></div>
 <script>window.STUDY_CONFIG = {
-  researcherName: '杜安琪',
+  researcherName: 'Anqi DU',
   researcherEmail: 'hvyad1@nottingham.edu.cn',
   supervisorName: 'Dr. Stewart Gray',
   supervisorEmail: 'stewart.gray@nottingham.edu.cn',
@@ -68,7 +68,7 @@ const ITEM_BANK = [
   {id:"05",target:"speak",collocation:"speak my mind",pre:"I hesitated to express my concerns, but the instructor urged me to ",post:" my mind."},
   {id:"06",target:"take",collocation:"take effect",pre:"The medicine should ",post:" effect within an hour, so you may start feeling better soon."},
   {id:"07",target:"commit",collocation:"commit an offence",pre:"Under the new law, drivers who use their phones while driving may ",post:" an offence and face a fine."},
-  {id:"08",target:"launch",collocation:"launch a campaign",pre:"To encourage more students to recycle, the university decided to ",post:" a campaign at the start of the semester."},
+  {id:"08",target:"issue",collocation:"issue a warning",pre:"After finding several safety problems, the inspectors decided to ",post:" a formal warning to the factory."},
   {id:"09",target:"seek",collocation:"seek advice",pre:"Unsure which course to take, Daniel decided to ",post:" advice from his tutor before submitting his application."},
   {id:"10",target:"ease",collocation:"ease tension",pre:"After the heated argument, the manager told a joke to ",post:" tension in the room."},
   {id:"11",target:"bridge",collocation:"bridge the gap",pre:"The new mentoring programme aims to ",post:" the gap between classroom learning and real workplace experience."},
@@ -80,8 +80,8 @@ const ITEM_BANK = [
   {id:"19",target:"withdraw",collocation:"withdraw an application",pre:"After accepting an offer from another university, Mia decided to ",post:" an application she had submitted earlier."},
   {id:"20",target:"resist",collocation:"resist temptation",pre:"Although the cake looked delicious, Emma managed to ",post:" temptation and stick to her diet."},
   {id:"21",target:"make",collocation:"make a discovery",pre:"After years of searching, the scientists finally managed to ",post:" a discovery: a new species of fish living deep in the ocean."},
-  {id:"25",target:"make",collocation:"make a fortune",pre:"He started a small software company and eventually managed to ",post:" a fortune from its success."},
-  {id:"27",target:"talk",collocation:"talk nonsense",pre:"What you’re saying makes no sense at all. Please don’t ",post:" nonsense like that!"},
+  {id:"25",target:"declare",collocation:"declare bankruptcy",pre:"After losing money for several years, the company could no longer pay its debts and had to ",post:" bankruptcy."},
+  {id:"27",target:"reach",collocation:"reach a compromise",pre:"Neither side was willing to accept the other's proposal. After several rounds of negotiation, they finally managed to ",post:" a compromise."},
   {id:"28",target:"lend",collocation:"lend an ear",pre:"I often go to Paul when something is troubling me. Paul is always willing to ",post:" an ear."},
   {id:"31",target:"alleviate",collocation:"alleviate pain",pre:"After the operation, the doctor gave the patient some medicine to ",post:" pain so that he could rest more comfortably."},
   {id:"32",target:"violate",collocation:"violate a rule",pre:"Students are not allowed to use their phones during exams. Anyone who does so will ",post:" a rule and may receive a punishment."}
@@ -98,7 +98,7 @@ const ITEM_BANK = [
   'use strict';
   const C = window.STUDY_CONFIG;
   const N = 24, FEEDBACK_MS = 10000, MATH_MS = 120000;
-  const STORE = 'l2-collocation-24-research-pilot-v3';
+  const STORE = 'l2-collocation-24-bilingual-v4';
   // 数据只自动记录，不预先宣称非目标词都是错误。
   // 本实验初始错误是否可用于主要分析，须在导出后人工核查。
   const HEADERS = [
@@ -154,7 +154,7 @@ const ITEM_BANK = [
     if(x && x.session_id && x.stage && (!suppliedPid || x.participant_id === suppliedPid)) s=x;}
   } catch(e) { /* disabled storage: proceed without resume */ }
   if(!s) s={stage:'consent',participant_id:'',session_id:newRunId(),version:0,
-    consent_timestamp:'',start_ms:0,end_ms:0,initial:{},post:{},
+    consent_timestamp:'',language:'zh',start_ms:0,end_ms:0,initial:{},post:{},
     initialOrder:[],postOrder:[],feedbackSeen:{},feedbackMs:{},index:0,
     feedbackDeadline:0,feedbackRemainingMs:0,
     mathDeadline:0,mathRemainingMs:MATH_MS,mathQuestion:0,mathAnswers:0,mathCorrect:0,
@@ -162,6 +162,7 @@ const ITEM_BANK = [
   // Refresh/reload should not discard an unfinished study. If an old partially
   // saved state is incomplete, initialize the new diagnostics without rewriting answers.
   if(!s.feedbackMs) s.feedbackMs={};
+  if(!s.language || !['zh','en'].includes(s.language)) s.language='zh';
   if(!Number.isFinite(s.mathCorrect)) s.mathCorrect=0;
   if(!Number.isFinite(s.offTabMs)) s.offTabMs=0;
   if(!Number.isFinite(s.hiddenSinceMs)) s.hiddenSinceMs=0;
@@ -188,10 +189,34 @@ const ITEM_BANK = [
   function setContent(content){stopTimer();app.innerHTML=content;}
   function addBtn(label,click,extra){const b=document.createElement('button');b.type='button';
     b.textContent=label;if(extra)b.className=extra; b.onclick=click;app.appendChild(b);return b;}
-  function mount(html){setContent('<main>'+html+'</main>');return app.querySelector('main');}
-  function paragraph(title,body) {return `<h1>${title}</h1>${body}`;}
-  function nextStage(stage) {s.stage=stage;s.index=0;persist();render();}
-  function completeError(msg){ mount('<h1>实验数据核对失败</h1><p>'+ec(msg)+'</p><p>请勿继续提交。请联系研究者。</p>'); }
+  function L(zh,en){return s.language==='en'?en:zh;}
+  function mount(html){
+    const isConsent=html.includes('class="consent"');
+    const nav=isConsent?'':`<nav class="lang-switch" aria-label="Language / 语言">
+      <button type="button" id="page-switch-zh" aria-pressed="${s.language==='zh'}">中文</button>
+      <button type="button" id="page-switch-en" aria-pressed="${s.language==='en'}">English</button>
+    </nav>`;
+    setContent('<main>'+nav+html+'</main>');
+    document.documentElement.lang=s.language==='en'?'en':'zh-CN';
+    const root=app.querySelector('main');
+    if(!isConsent){
+      for(const code of ['zh','en']) {
+        const btn=root.querySelector('#page-switch-'+code);
+        if(btn) btn.onclick=()=>{
+          if(code===s.language)return;
+          const current=root.querySelector('input.answer');
+          // Keep any typed response when the language is switched mid-question.
+          if(current && s.stage==='initial'||current && s.stage==='post'||current && s.stage==='practice')
+            s.draftAnswer={stage:s.stage,index:s.index,value:current.value};
+          s.language=code;persist();render();
+        };
+      }
+    }
+    return root;
+  }
+  function paragraph(title,body){return `<h1>${title}</h1>${body}`;}
+  function nextStage(stage){s.stage=stage;s.index=0;s.draftAnswer=null;persist();render();}
+  function completeError(msg){mount(`<h1>${L('实验数据核对失败','Data validation error')}</h1><p>${ec(msg)}</p><p>${L('请勿继续提交。请联系研究者。','Please do not submit again. Contact the researcher.')}</p>`);}
   function consent(){
     const root=mount(`<section class="consent">
       <nav class="lang-switch" aria-label="语言 / Language">
@@ -228,7 +253,7 @@ const ITEM_BANK = [
         <p><strong>Risks and Benefits:</strong> No significant risks are anticipated, although you may experience mild fatigue. There is no guaranteed direct benefit, but the findings may contribute to English learning and feedback design.</p>
         <p><strong>Confidentiality:</strong> Responses will be recorded using participant codes and used solely for academic research. Data will be stored and handled securely in accordance with applicable research ethics and data protection requirements. No directly identifying information will be disclosed in research reports.</p>
         <p>If you have any questions or concerns, please contact us. Thank you for your participation!</p>
-        <p>Researcher: 杜安琪<br>Email: <a href="mailto:hvyad1@nottingham.edu.cn">hvyad1@nottingham.edu.cn</a></p>
+        <p>Researcher: Anqi DU<br>Email: <a href="mailto:hvyad1@nottingham.edu.cn">hvyad1@nottingham.edu.cn</a></p>
         <p>Supervisor: Dr. Stewart Gray<br>Email: <a href="mailto:stewart.gray@nottingham.edu.cn">stewart.gray@nottingham.edu.cn</a></p>
         <p>University of Nottingham Ningbo China</p>
       </div>
@@ -244,9 +269,9 @@ const ITEM_BANK = [
         <p id="consent-error" class="small" role="alert"></p>
       </div>
     </section>`);
-    let language = 'zh';
+    let language = s.language;
     function setConsentLanguage(value){
-      language=value;
+      language=value;s.language=value;persist();document.documentElement.lang=value==='en'?'en':'zh-CN';
       root.querySelector('#consent-zh').hidden=value!=='zh';
       root.querySelector('#consent-en').hidden=value!=='en';
       root.querySelector('#switch-zh').setAttribute('aria-pressed',String(value==='zh'));
@@ -258,14 +283,14 @@ const ITEM_BANK = [
     const confirmBtn=document.createElement('button');root.appendChild(confirmBtn);
     root.querySelector('#switch-zh').onclick=()=>setConsentLanguage('zh');
     root.querySelector('#switch-en').onclick=()=>setConsentLanguage('en');
-    setConsentLanguage('zh');
+    setConsentLanguage(s.language);
     confirmBtn.onclick=()=>{
       const choice=root.querySelector('input[name="consent-choice"]:checked');
       const err=root.querySelector('#consent-error');
       if(!choice){err.textContent=language==='zh'?'请选择是否同意参加。':'Please select whether you agree to participate.';return}
       if(choice.value==='no'){
         try{sessionStorage.removeItem(STORE)}catch(e){}
-        mount('<h1>感谢您阅读研究说明</h1><p>您选择不参加本研究，可以直接关闭页面。不会保存实验作答数据。</p>');
+        mount(`<h1>${L('感谢您阅读研究说明','Thank you for reviewing the study information')}</h1><p>${L('您选择不参加本研究，可以直接关闭页面。不会保存实验作答数据。','You have declined to participate and may close this page. No experiment responses will be recorded.')}</p>`);
         return;
       }
       if(!root.querySelector('#adult').checked||!root.querySelector('#read').checked){
@@ -285,13 +310,20 @@ const ITEM_BANK = [
     };
   }
   function instructions(){
-    const root=mount(paragraph('实验说明',`<p>您将完成一项英语搭配学习任务。</p>
-      <p>第一部分有24道填空题。请根据句子语境及首字母提示，填写<strong>完整的英文动词</strong>，而不是只填写剩余字母。</p>
-      <p>即使不确定答案，也请尽量作答或进行合理猜测。确实无法作答时可以留空，点击“提交答案”。</p>
-      <p>大小写不限，请尽量正确拼写。作答时请勿使用词典、翻译软件或其他语言辅助工具。</p>
-      <p>每道题填写后，请点击“提交答案”。系统会立即呈现正确表达，请认真阅读并尝试学习。反馈显示10秒后将隐藏，再点击“下一题”继续。稍后还将进行另一轮英文填空。</p>
-      <p>填空题不设单题时限。按回车键不会提交答案，请勿刷新页面。</p>`));
-    const b=document.createElement('button');b.textContent='开始练习';root.appendChild(b);b.onclick=()=>nextStage('practice');
+    const root=mount(paragraph(L('实验说明','Experiment Instructions'), L(`
+      <p>您将完成一项英语搭配学习任务。</p>
+      <p>第一部分有24道填空题。请根据句子语境及句中首字母提示，填写<strong>完整的英文动词</strong>，不是只填写剩余字母。</p>
+      <p>即使不确定答案，也请尽量作答或合理猜测；确实无法作答时可以留空。</p>
+      <p>大小写不限，请尽量准确拼写。请勿使用词典、翻译软件或其他语言辅助工具。</p>
+      <p>每道题作答后点击“提交答案”。系统立即显示正确表达；10秒后反馈隐藏，再点击“下一题”继续。稍后还将进行无提示填空测试。</p>
+      <p>填空题不设单题时限，按回车键不会提交。请尽量避免刷新页面。</p>`, `
+      <p>You will complete an English verb–noun collocation learning task.</p>
+      <p>Part 1 contains 24 gap-fill sentences. Use the context and the <strong>first letter shown within each sentence</strong> to supply the <strong>complete English verb</strong>, not just the missing letters.</p>
+      <p>Please give your best answer, even when unsure. You may leave a blank if you cannot provide an answer.</p>
+      <p>Capitalisation does not matter, but please spell carefully. Do not use dictionaries, translators or other language-learning aids.</p>
+      <p>Click “Submit Answer” after each sentence. Correct feedback will appear immediately, remain visible for 10 seconds, and then disappear. Click “Next” to proceed. A no-cue recall test will follow later.</p>
+      <p>There is no time limit for individual gap-fill answers. Pressing Enter will not submit an answer. Please avoid refreshing the page.</p>`)));
+    const b=document.createElement('button');b.textContent=L('开始练习','Start Practice');root.appendChild(b);b.onclick=()=>nextStage('practice');
   }
   function makeSentence(root,item,cued,value=''){
     const line=document.createElement('p');line.className='sentence';
@@ -304,17 +336,21 @@ const ITEM_BANK = [
     root.appendChild(line);
     const inp=document.createElement('input');inp.type='text';inp.className='answer';inp.name='answer';
     inp.autocomplete='off';inp.autocapitalize='off';inp.spellcheck=false;
-    inp.placeholder='请输入完整的英文动词';
-    inp.setAttribute('aria-label','请输入完整英文动词');
+    inp.placeholder=L('请输入完整的英文动词','Enter the complete English verb');
+    inp.setAttribute('aria-label',L('请输入完整英文动词','Enter the complete English verb'));
     inp.value=value;root.appendChild(inp);
     return inp;
   }
   function practice(){
-    const root=mount('<h1>练习题</h1><p>下面是一道练习题，不计入正式实验。请根据句中的首字母提示填写完整动词。</p>');
-    const input=makeSentence(root,{pre:'Before leaving home, please ',post:' the door.',target:'lock'},true);
-    const b=document.createElement('button');b.textContent='提交答案';root.appendChild(b);
-    b.onclick=()=>{input.disabled=true;b.remove();const p=document.createElement('p');p.textContent='示例正确表达：lock the door';root.appendChild(p);
-      const c=document.createElement('button');c.textContent='开始正式实验';root.appendChild(c);c.onclick=()=>nextStage('initial');};
+    const root=mount(`<h1>${L('练习题','Practice Item')}</h1><p>${L('下面是一道练习题，不计入正式实验。请根据句中的首字母提示填写完整动词。','This example does not count towards the experiment. Use the first-letter cue in the sentence to type the complete verb.')}</p>`);
+    const draft=s.draftAnswer?.stage==='practice'?s.draftAnswer.value:'';
+    const input=makeSentence(root,{pre:'Before leaving home, please ',post:' the door.',target:'lock'},true,draft);
+    const b=document.createElement('button');b.textContent=L('提交答案','Submit Answer');root.appendChild(b);
+    b.onclick=()=>{
+      s.draftAnswer=null;input.disabled=true;b.remove();
+      const p=document.createElement('p');p.textContent=L('示例正确表达：','Example correct expression: ')+'lock the door';root.appendChild(p);
+      const c=document.createElement('button');c.textContent=L('开始正式实验','Start Experiment');root.appendChild(c);c.onclick=()=>nextStage('initial');
+    };
     input.focus();
   }
   function gap(stage){
@@ -322,14 +358,16 @@ const ITEM_BANK = [
     const order=initial?s.initialOrder:s.postOrder;
     if(s.index>=order.length){nextStage(initial?'mathInstructions':'end');return}
     const item=byId[order[s.index]];
-    const root=mount(`<h1>${initial?'第一部分：英文填空与学习反馈':'第三部分：英文填空测试'}</h1>
-       <p class="small muted">第 ${s.index+1} / ${N} 题</p>`);
-    const input=makeSentence(root,item,initial,(initial?s.initial:s.post)[item.id]||'');
+    const root=mount(`<h1>${initial?L('第一部分：英文填空与学习反馈','Part 1: Gap Fill and Feedback'):L('第三部分：英文填空测试','Part 3: Recall Test')}</h1>
+       <p class="small muted">${L('第','Item')} ${s.index+1} / ${N} ${L('题','')}</p>`);
+    const stored=(initial?s.initial:s.post)[item.id]||'';
+    const draft=s.draftAnswer?.stage===stage && s.draftAnswer?.index===s.index?s.draftAnswer.value:null;
+    const input=makeSentence(root,item,initial,draft===null?stored:draft);
     const b=document.createElement('button');
-    b.textContent=initial?'提交答案':(s.index===N-1?'完成本部分':'下一题');
+    b.textContent=initial?L('提交答案','Submit Answer'):(s.index===N-1?L('完成本部分','Finish This Part'):L('下一题','Next'));
     root.appendChild(b);
     function save(){
-      const answer=normal(input.value);
+      const answer=normal(input.value);s.draftAnswer=null;
       if(initial){
         s.initial[item.id]=answer;
         s.stage='itemFeedback';
@@ -352,15 +390,15 @@ const ITEM_BANK = [
       completeError('当前题目尚未提交初始答案');return;
     }
     const a=conditionFor(item.id,s.version)==='A';
-    const root=mount(`<h1>第一部分：学习反馈</h1>
-      <p class="small muted">第 ${s.index+1} / ${N} 题</p>
-      <p class="small muted">请认真阅读正确表达。反馈将在10秒后隐藏，随后可点击“下一题”。</p>`);
+    const root=mount(`<h1>${L('第一部分：学习反馈','Part 1: Learning Feedback')}</h1>
+      <p class="small muted">${L('第','Item')} ${s.index+1} / ${N} ${L('题','')}</p>
+      <p class="small muted">${L('请认真阅读正确表达。反馈将在10秒后隐藏，随后可点击“下一题”。','Study the correct expression. The feedback will disappear after 10 seconds. Then click “Next”.')}</p>`);
     const body=document.createElement('div');body.className='feedback';
     const line=document.createElement('p');line.className='feedback-sentence';
     line.textContent=item.pre+'______'+item.post;
     body.appendChild(line);
     const label=document.createElement('p');label.className='feedback-label';
-    label.textContent='正确表达：';body.appendChild(label);
+    label.textContent=L('正确表达：','Correct expression:');body.appendChild(label);
     const correct=document.createElement('p');
     correct.style.fontWeight='bold';correct.style.fontSize='27px';correct.style.margin='0';
     correct.textContent=item.collocation;
@@ -368,7 +406,7 @@ const ITEM_BANK = [
     if(a){
       const original=document.createElement('p');original.className='feedback-initial';
       // Neutral label: answers may include acceptable alternatives, not just errors.
-      original.textContent='你刚才的回答：'+(s.initial[item.id]||'（未填写）');
+      original.textContent=L('你刚才的回答：','Your previous answer: ')+(s.initial[item.id]||L('（未填写）','(blank)'));
       body.appendChild(original);
     }
     root.appendChild(body);
@@ -416,11 +454,11 @@ const ITEM_BANK = [
     if(s.index>=N){nextStage('mathInstructions');return}
     const item=byId[s.initialOrder[s.index]];
     if(s.feedbackSeen[item.id]!==true){completeError('当前反馈记录不完整');return}
-    const root=mount(`<h1>第一部分：学习反馈</h1>
-      <p class="small muted">第 ${s.index+1} / ${N} 题</p>
-      <p>反馈时间已结束。</p>`);
+    const root=mount(`<h1>${L('第一部分：学习反馈','Part 1: Learning Feedback')}</h1>
+      <p class="small muted">${L('第','Item')} ${s.index+1} / ${N} ${L('题','')}</p>
+      <p>${L('反馈时间已结束。','Feedback display time has ended.')}</p>`);
     const btn=document.createElement('button');
-    btn.textContent=s.index===N-1?'进入下一部分':'下一题';
+    btn.textContent=s.index===N-1?L('进入下一部分','Continue to Part 2'):L('下一题','Next');
     root.appendChild(btn);
     btn.onclick=()=>{
       if(s.stage!=='feedbackWait')return;
@@ -430,11 +468,14 @@ const ITEM_BANK = [
     };
   }
   function mathInstructions(){
-    const root=mount(`<h1>第二部分：数学判断任务</h1>
-      <p>接下来屏幕会依次显示一些简单的算式。请判断等式是否正确，点击“正确”或“错误”。</p>
-      <p>请尽量认真、连续作答。该部分持续约2分钟，时间结束后将自动进入下一阶段。</p>
-      <p>例如：12 + 9 = 21，应选择“正确”。</p>`);
-    const b=document.createElement('button');b.textContent='开始数学判断';root.appendChild(b);
+    const root=mount(`<h1>${L('第二部分：数学判断任务','Part 2: Arithmetic Judgement')}</h1>
+      ${L(`<p>屏幕会显示简单算式。请判断等式是否正确，点击“正确”或“错误”。</p>
+      <p>请尽量认真、连续作答。本部分持续约2分钟，时间结束后自动进入下一阶段。</p>
+      <p>例如：12 + 9 = 21，应选择“正确”。</p>`,
+      `<p>You will see a series of arithmetic equations. Decide whether each equation is correct by clicking “True” or “False”.</p>
+      <p>Please respond carefully and continuously. This part lasts approximately two minutes and will then advance automatically.</p>
+      <p>For example: 12 + 9 = 21 is “True”.</p>`)}`);
+    const b=document.createElement('button');b.textContent=L('开始数学判断','Start Arithmetic Task');root.appendChild(b);
     b.onclick=()=>{
       s.mathRemainingMs=MATH_MS;s.mathDeadline=0;s.mathQuestion=0;
       s.mathAnswers=0;s.mathCorrect=0;
@@ -459,7 +500,7 @@ const ITEM_BANK = [
       s.mathRemainingMs=Math.max(0,s.mathDeadline-Date.now());
     }
     const question=equation(s.mathQuestion);
-    const root=mount('<h1>第二部分：数学判断任务</h1>');
+    const root=mount(`<h1>${L('第二部分：数学判断任务','Part 2: Arithmetic Judgement')}</h1>`);
     const p=document.createElement('p');p.className='math';p.textContent=question.text;root.appendChild(p);
     const answers=document.createElement('div');answers.className='center';root.appendChild(answers);
     function updateRemaining(){
@@ -478,7 +519,7 @@ const ITEM_BANK = [
       if(choice===question.correct) s.mathCorrect++;
       updateRemaining();persist();render();
     }
-    for(const value of [{label:'正确',answer:true},{label:'错误',answer:false}]){
+    for(const value of [{label:L('正确','True'),answer:true},{label:L('错误','False'),answer:false}]){
       const b=document.createElement('button');b.textContent=value.label;
       b.onclick=()=>choose(value.answer);answers.appendChild(b);
     }
@@ -499,11 +540,16 @@ const ITEM_BANK = [
     resume();
   }
   function postInstructions(){
-    const root=mount(paragraph('第三部分：英文填空测试（2/2）',`<p>接下来您将再次完成24道英文填空题，题目包含之前练习过的句子，但顺序可能不同。</p>
-    <p>本部分不再提供动词首字母提示。请根据句子语境，尽量回忆并填写正确的完整英文动词。</p>
-    <p>即使不确定，也请尽量作答；确实无法作答时可以留空。大小写不限。请勿使用词典、翻译软件或其他语言辅助工具。</p>
-    <p>本部分不再显示正确答案。请点击“下一题”提交回答，按回车键不会提交。</p>`));
-    const b=document.createElement('button');b.textContent='开始最后一部分';root.appendChild(b);b.onclick=()=>nextStage('post');
+    const root=mount(paragraph(L('第三部分：英文填空测试','Part 3: English Recall Test'),L(`
+      <p>接下来您将再次完成24道英文填空题，句子与之前练习的相同，但顺序可能不同。</p>
+      <p>本部分不提供动词首字母提示。请根据语境，尽量回忆并填写正确的<strong>完整英文动词</strong>。</p>
+      <p>即使不确定，也请尽量作答；确实无法作答时可以留空。大小写不限。请勿使用词典、翻译软件或其他语言辅助工具。</p>
+      <p>本部分不再显示答案。点击“下一题”提交回答；按回车键不会提交。</p>`,
+      `<p>You will complete 24 English gap-fill sentences again. These are the sentences you encountered earlier, possibly in a different order.</p>
+      <p>No first-letter cues will be provided. Based on the sentence context, recall and supply the <strong>complete English verb</strong>.</p>
+      <p>Please give your best answer. You may leave a blank if you cannot answer. Capitalisation does not matter. Do not use dictionaries, translators or other language-learning aids.</p>
+      <p>No feedback will be displayed in this part. Click “Next” to submit each answer; pressing Enter will not submit.</p>`)));
+    const b=document.createElement('button');b.textContent=L('开始最后一部分','Start Final Part');root.appendChild(b);b.onclick=()=>nextStage('post');
   }
   function checkData(){
     for(const order of [s.initialOrder,s.postOrder])if(order.length!==N||new Set(order).size!==N||order.some(k=>!byId[k]))return '题目数量或编号不匹配';
@@ -530,6 +576,8 @@ const ITEM_BANK = [
       const initial=s.initial[it.id]??'',post=s.post[it.id]??'';
       const ini=normalizedForMatching(initial), last=normalizedForMatching(post);
       const target=normalizedForMatching(it.target);
+      const full=normalizedForMatching(it.collocation);
+      const matchTarget=x=>Number(x!=='' && (x===target||x===full));
       return [
         s.participant_id,s.session_id,'V'+s.version,
         1,1,s.consent_timestamp,startISO,endISO,1,
@@ -537,7 +585,7 @@ const ITEM_BANK = [
         it.id,conditionFor(it.id,s.version),it.target,
         s.initialOrder.indexOf(it.id)+1,initial,
         s.postOrder.indexOf(it.id)+1,post,s.feedbackMs[it.id]??'',
-        Number(ini!=='' && ini===target),Number(last!=='' && last===target),
+        matchTarget(ini),matchTarget(last),
         Number(ini!=='' && ini===last)
       ];
     });
@@ -549,9 +597,9 @@ const ITEM_BANK = [
   function configComplete(){return Boolean(configId) && /^[a-zA-Z0-9_-]+$/.test(configId);}
   async function upload(){
     if(inFlight)return;
-    if(!online){s.uploadMessage='当前未配置 DataPipe，数据只保存在本地 CSV。';persist();return;}
-    if(!configComplete()){s.uploadMessage='DataPipe 实验编号未正确填写，无法上传。';persist();return;}
-    inFlight=true;s.uploadMessage='正在上传，请不要关闭页面。';persist();render();
+    if(!online){s.uploadMessage=L('当前未配置 DataPipe，数据只保存在本地 CSV。','DataPipe is not configured. Data can only be downloaded locally.');persist();return;}
+    if(!configComplete()){s.uploadMessage=L('DataPipe 实验编号未正确填写，无法上传。','DataPipe Experiment ID is invalid.');persist();return;}
+    inFlight=true;s.uploadMessage='UPLOAD_IN_PROGRESS';persist();render();
     try{
       const controller=new AbortController();const t=setTimeout(()=>controller.abort(),25000);
       let response;try{
@@ -561,27 +609,33 @@ const ITEM_BANK = [
       }finally{clearTimeout(t)}
       let detail={};try{detail=await response.json()}catch(e){}
       if(response.status===201||response.status===202){s.uploadConfirmed=true;
-        s.uploadMessage=response.status===201?'数据已保存至研究者的数据存储空间。':'数据已由服务器接收，正在排队写入研究者的数据存储空间。';}
-      else {s.uploadMessage=`上传未成功（HTTP ${response.status}，${detail.error||'未知错误'}）。请下载CSV并联系研究者。`;}
-    }catch(error){s.uploadMessage='未能确认数据上传（可能是网络连接问题）。请下载CSV并联系研究者。';}
+        s.uploadMessage=response.status===201?'UPLOAD_SAVED':'UPLOAD_QUEUED';}
+      else {s.uploadMessage=`UPLOAD_FAILED_HTTP_${response.status}: ${detail.error||'unknown'}`;}
+    }catch(error){s.uploadMessage='UPLOAD_FAILED_NETWORK';}
     finally{inFlight=false;persist();render()}
+  }
+  function uploadStatus(){
+    if(s.uploadMessage==='UPLOAD_IN_PROGRESS') return L('正在上传，请不要关闭页面。','Uploading data. Please keep this page open.');
+    if(s.uploadMessage==='UPLOAD_SAVED')return L('数据已成功保存。','Your data have been saved successfully.');
+    if(s.uploadMessage==='UPLOAD_QUEUED')return L('服务器已接收数据，正在排队保存。','The server has accepted your data and queued the file for storage.');
+    if(s.uploadMessage==='UPLOAD_FAILED_NETWORK')return L('网络问题：无法确认上传成功。请下载CSV备份并联系研究者。','A network problem prevented upload confirmation. Please download a CSV backup and contact the researcher.');
+    if(s.uploadMessage?.startsWith('UPLOAD_FAILED_HTTP_'))return L('上传未成功，请下载CSV备份并联系研究者。','Upload failed. Please download a CSV backup and contact the researcher.')+' ('+s.uploadMessage.slice(19)+')';
+    return L('请提交实验数据。','Please submit your experiment data.');
   }
   function end(){
     const err=checkData();if(err){completeError(err);return}
     s.end_ms=s.end_ms||Date.now();persist();
-    const root=mount('<h1>实验已完成</h1><p>感谢您的参与。</p>');
-    const status=document.createElement('p');status.id='status';status.textContent=s.uploadMessage||
-      (online?'请提交实验数据。':'当前未配置DataPipe，仅能下载本地CSV文件。');root.appendChild(status);
-    if(!s.uploadConfirmed&&online){const b=document.createElement('button');b.textContent=inFlight?'正在上传':'提交实验数据';
+    const root=mount(`<h1>${L('实验已完成','Experiment Complete')}</h1><p>${L('感谢您的参与。','Thank you for participating.')}</p>`);
+    const status=document.createElement('p');status.id='status';
+    status.textContent=s.uploadMessage?uploadStatus():(online?L('正在准备数据上传。','Preparing data upload.'):L('当前未配置DataPipe，仅能下载本地CSV文件。','DataPipe is not configured. Please download the CSV file.'));
+    root.appendChild(status);
+    if(!s.uploadConfirmed&&online){const b=document.createElement('button');b.textContent=inFlight?L('正在上传','Uploading'):L('提交实验数据','Submit Experiment Data');
       b.disabled=inFlight;root.appendChild(b);b.onclick=upload;}
     if(!s.uploadConfirmed){const b=document.createElement('button');b.className='secondary';
-      b.textContent='下载本地CSV备份';root.appendChild(b);b.onclick=download;}
-    if(!online){const p=document.createElement('p');p.className='small';p.textContent='本地测试结束。请点击“下载本地CSV备份”，核对其中有24行数据。';root.appendChild(p)}
-    else if(s.uploadConfirmed){const p=document.createElement('p');p.className='small';p.textContent='您可以关闭页面，无需上传任何文件。';root.appendChild(p)}
-    // 已连接 DataPipe 时，在完成页面自动开始上传。若失败仍保留按钮重试与 CSV 备份。
-    if(online && !s.uploadConfirmed && !s.uploadMessage && !inFlight) {
-      timer=setTimeout(upload,0);
-    }
+      b.textContent=L('下载本地CSV备份','Download CSV Backup');root.appendChild(b);b.onclick=download;}
+    if(!online){const p=document.createElement('p');p.className='small';p.textContent=L('本地测试结束。请下载CSV备份检查文件。','The local test has ended. Please download the CSV backup to inspect it.');root.appendChild(p)}
+    else if(s.uploadConfirmed){const p=document.createElement('p');p.className='small';p.textContent=L('您可以关闭页面，无需手动上传文件。','You may close this page. No manual upload is needed.');root.appendChild(p)}
+    if(online && !s.uploadConfirmed && !s.uploadMessage && !inFlight)timer=setTimeout(upload,0);
   }
   function render(){try{
     if(s.stage==='consent')return consent();
